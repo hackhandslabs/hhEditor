@@ -1,0 +1,24 @@
+<div class="hhEditor">
+	<div class="tabs" >
+		<div id="sortable-container">
+		    <div class="sortable-row" as-sortable="sortableOptions" ng-model="tabs">
+		        <div class="onetab" ng-repeat="(key, item) in tabs" as-sortable-item>
+		            <div ng-click="focus(key)" class="tabButton" ng-class="{active: tabStatus.focus == key}"  as-sortable-item-handle><div class="close" ng-click="close($event, key)">x</div><div class="title">{{item.title}}{{item.syntax.ext}}</div></div>
+		        </div>
+		    </div>
+		</div>
+		<div class="addNew" ng-click="add()">+</div>
+	</div>
+	<div class="tabsContents">
+		<div ng-repeat="(key, item) in tabs" class="tabContent" ng-class="{active: tabStatus.focus == key}">
+			<div class="editor">
+				<div hh-firepad tabeditor="item" class="aceEditor"></div>
+			</div>
+	
+			<div class="editorStatus">
+				<div class="cursor">Line {{item.row || "1"}}, Column {{item.column || "1"}}</div>
+				<div class="syntax">Syntax: <select ng-model="item.syntax" ng-change="syntax(key)" ng-options="mode.name for mode in modes track by mode.name"></select></div>
+			</div>
+		</div>
+	</div>
+</div>
