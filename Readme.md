@@ -1,5 +1,5 @@
 # HH UI - Editor
-Code colaboration editor with tab support.
+Angular Code Colaboration Editor with tab support.
 
 ## Features
 - Tab system support

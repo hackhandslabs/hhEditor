@@ -1,8 +1,8 @@
 {
-  "name": "hhEditor",
-  "version": "1.0.1",
-  "description": "Code colaboration editor with tab support.",
-  "main": "gulpfile.js",
+  "name": "hheditor",
+  "version": "1.0.2",
+  "description": "Angular directive for Code Colaboration Editor with tab support",
+  "main": "src/hhEditor.js",
   "devDependencies": {
     "gulp": "^3.8.11",
     "gulp-directive-replace": "^0.1.4",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.org:hackhands/ui-hheditor.git"
+    "url": "git@github.com:hackhandslabs/hhEditor.git"
   },
   "author": "HackHands Dev Team",
 }

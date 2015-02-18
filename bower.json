@@ -1,0 +1,19 @@
+{
+  "name": "hhEditor",
+  "version": "1.0.2",
+  "authors": [
+    "HackHands Dev Team"
+  ],
+  "description": "Angular directive for Code Colaboration Editor with tab support",
+  "main": "dist/hhEditor.js",
+  "moduleType": [
+    "globals"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
