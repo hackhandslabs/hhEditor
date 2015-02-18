@@ -109,23 +109,7 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
 
         };
 
-/*
-        var fnConnectedHandler = null;
-        $rootScope.$broadcast('session:is_connected', function(status, session){
-          if(status){
-            console.log('[SessionChatCtrl] Session is already connected');
-            onSessionConnected(session); return;
-          }
-          // If is not connected listen when it will be
-          fnConnectedHandler = $rootScope.$on('session:connected', function(event, session){
-            onSessionConnected(session);
-          });
-        });
-        $scope.$on('$destroy', function(){
-          console.log('[SessionChatCtrl] $destroy');
-          if(fnConnectedHandler) fnConnectedHandler();
-        });
-*/
+
 
       }]
     }

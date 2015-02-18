@@ -6,27 +6,22 @@ Code colaboration editor with tab support.
 - Multiuser (unlimited)
 - Bidirectional syntax change
 
+## Config
 
-## License 
+* **firebase** defaults to `null`
+	* A complete firebase url. A new child object will be created to mannage everything (tabs and editors)
 
-(The MIT License)
+* **syntax** defaults to `JavaScript` (case-sensitive)
+	* Default code editor syntax for newly created tabs
 
-Copyright (c) 2015, HackHands.com Dev Team
+* **theme** defaults to `ace/theme/monokai` (case-sensitive)
+	* Defaul theme for the code editor
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+* **readOnly** defaults to `false`
+	* Is the editor read only mode
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+* **initialText** defaults to `empty`
+	* When the component is initialized, if there are no tabs on firebase, a new tab will be created with this text/content
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+* **initialSyntax** defaults to previously defined `syntax` value
+	* Default syntax for initialText tab

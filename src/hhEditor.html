@@ -12,7 +12,7 @@
 	<div class="tabsContents">
 		<div ng-repeat="(key, item) in tabs" class="tabContent" ng-class="{active: tabStatus.focus == key}">
 			<div class="editor">
-				<div hh-firepad tabeditor="item" class="aceEditor"></div>
+				<div hh-firepad tabeditor="item" settings="settings" class="aceEditor"></div>
 			</div>
 	
 			<div class="editorStatus">

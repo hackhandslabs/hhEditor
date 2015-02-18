@@ -29,7 +29,7 @@
     <!--endRemoveIf(production)-->
 
     <style type="text/css">
-		html,body {
+		html, body {
 			background-color: #F1F2F4;
 			margin: 0px;
 			font-family: arial;
@@ -38,30 +38,12 @@
     </style>
 
     <script type="text/javascript">
-		angular.module('HackhandsApp', ['ui.sortable', 'firebase', 'hhUI'])
-
-		.service('Settings', [function($firebase) {
-
-			var settings = {
-				SESSION_TOKEN: 'hello1234new',
-				FIREBASE_PATH: 'https://scorching-fire-7372.firebaseio.com'
-			}
-
-			return {
-				get: function(key){
-					return settings[key]
-				},
-				set: function(key){
-					return settings[key]
-				}   
-			}
-
-		}])
+		angular.module('HackhandsApp', ['hhUI'])
     </script>
 </head>
 <body>
 
-    <div hh-editor session="session"></div>
+    <hh-editor settings="{ firebase: 'https://hhui.firebaseio.com/hhEditor/hello/', syntax: 'JavaScript', theme: 'ace/theme/github', readOnly: false, initialText:'hello\nddd', initialSyntax:'PHP' }"></hh-editor>
 
 </body>
 </html>
