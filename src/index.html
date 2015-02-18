@@ -39,11 +39,35 @@
 
     <script type="text/javascript">
 		angular.module('HackhandsApp', ['hhUI'])
+			.controller('demo', function($scope){
+				$scope.editorConfig = {
+					firebase: 'https://hhui.firebaseio.com/hhEditor/'+fbNamespace+'/', 
+					syntax: 'JavaScript', 
+					//theme: 'ace/theme/github', 
+					readOnly: false, 
+					initialText:'Hello\nWorld!', 
+					initialSyntax:'Markdown' 
+				}
+			})
     </script>
 </head>
-<body>
+<body ng-controller="demo">
 
-    <hh-editor settings="{ firebase: 'https://hhui.firebaseio.com/hhEditor/hello/', syntax: 'JavaScript', theme: 'ace/theme/github', readOnly: false, initialText:'Hello\nWorld!', initialSyntax:'Markdown' }"></hh-editor>
+    <hh-editor settings="editorConfig"></hh-editor>
 
 </body>
 </html>
+<!-- Ignore all the coe bellow this lines, just for demo-->
+<script type="text/javascript">
+	function randomString(length) {
+		var text = "";
+		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		for(var i=0; i < length; i++)
+		text += possible.charAt(Math.floor(Math.random() * possible.length));
+		return text;
+	}
+
+	var fbNamespace = window.location.hash.replace(/#/g, '') || randomString(20);
+	var url = window.location.toString().replace(/#.*/, '') + '#' + fbNamespace;
+	window.location = url;
+</script>
