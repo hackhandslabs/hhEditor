@@ -1,6 +1,6 @@
 {
   "name": "hhEditor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Code colaboration editor with tab support.",
   "main": "gulpfile.js",
   "devDependencies": {
@@ -15,5 +15,4 @@
     "url": "git@bitbucket.org:hackhands/ui-hheditor.git"
   },
   "author": "HackHands Dev Team",
-  "license": "MIT"
 }

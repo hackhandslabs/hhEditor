@@ -2,20 +2,28 @@
 
 angular.module('hhUI', ['ui.sortable', 'firebase'])
 
-  .directive('hhEditor', ['Settings', '$rootScope', '$firebase',
-    function (Settings, $rootScope, $firebase) {
+  .directive('hhEditor', ['$firebase', function ($firebase) {
     return {
-      restrict:'A',
+      restrict:'A E',
       replace: true,
       scope: {
-        session:'=session',
+        settings:'=settings',
       },
-      template: '<div class=hhEditor><div class=tabs><div id=sortable-container><div class=sortable-row as-sortable=sortableOptions ng-model=tabs><div class=onetab ng-repeat="(key, item) in tabs" as-sortable-item=""><div ng-click=focus(key) class=tabButton ng-class="{active: tabStatus.focus == key}" as-sortable-item-handle=""><div class=close ng-click="close($event, key)">x</div><div class=title>{{item.title}}{{item.syntax.ext}}</div></div></div></div></div><div class=addNew ng-click=add()>+</div></div><div class=tabsContents><div ng-repeat="(key, item) in tabs" class=tabContent ng-class="{active: tabStatus.focus == key}"><div class=editor><div hh-firepad="" tabeditor=item class=aceEditor></div></div><div class=editorStatus><div class=cursor>Line {{item.row || "1"}}, Column {{item.column || "1"}}</div><div class=syntax>Syntax:<select ng-model=item.syntax ng-change=syntax(key) ng-options="mode.name for mode in modes track by mode.name"></select></div></div></div></div></div>',
+      template: '<div class=hhEditor><div class=tabs><div id=sortable-container><div class=sortable-row as-sortable=sortableOptions ng-model=tabs><div class=onetab ng-repeat="(key, item) in tabs" as-sortable-item=""><div ng-click=focus(key) class=tabButton ng-class="{active: tabStatus.focus == key}" as-sortable-item-handle=""><div class=close ng-click="close($event, key)">x</div><div class=title>{{item.title}}{{item.syntax.ext}}</div></div></div></div></div><div class=addNew ng-click=add()>+</div></div><div class=tabsContents><div ng-repeat="(key, item) in tabs" class=tabContent ng-class="{active: tabStatus.focus == key}"><div class=editor><div hh-firepad="" tabeditor=item settings=settings class=aceEditor></div></div><div class=editorStatus><div class=cursor>Line {{item.row || "1"}}, Column {{item.column || "1"}}</div><div class=syntax>Syntax:<select ng-model=item.syntax ng-change=syntax(key) ng-options="mode.name for mode in modes track by mode.name"></select></div></div></div></div></div>',
       controller: ['$scope', function($scope){
 
+        // Base settings
+        var settings = {
+          firebase: false,
+          syntax: $scope.settings.syntax || 'JavaScript',
+          initialText: $scope.settings.initialText || '',          
+        }
+        settings.initialSyntax = $scope.settings.initialSyntax || settings.syntax
+
+        // Supported syntax mode's
         $scope.modes = [
           { name: 'JavaScript', mode: 'ace/mode/javascript', ext:'.js'},
-          { name: 'HTML5', mode:"ace/mode/html", ext:'.html' },
+          { name: 'HTML', mode:"ace/mode/html", ext:'.html' },
           { name: 'PHP', mode:"ace/mode/php", ext:'.php' },
           { name: 'C', mode:"ace/mode/c_cpp", ext:'.c' },
           { name: 'C++', mode:"ace/mode/c_cpp", ext:'.cc' },
@@ -47,10 +55,19 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
           { name: 'Text', mode:"ace/mode/text", ext:'.txt' },
         ];
 
+        var getSyntax = function(name){
+          var result = $scope.modes[0];
+          angular.forEach($scope.modes, function(value, key) {
+            if (value.name == name)
+              result = value
+          });
+          return result;
+        }
 
-        var ref = new Firebase(Settings.get('FIREBASE_PATH')).child("/session/"+Settings.get('SESSION_TOKEN')+"/editor");
-        $scope.tabs = $firebase(ref.child('tabs')).$asArray();
-        $scope.tabStatus = $firebase(ref.child('status')).$asObject();
+        // Get default mode for new tabs
+        settings.syntaxMode = getSyntax(settings.syntax);
+        settings.initialSyntaxMode = getSyntax(settings.initialSyntax);
+
 
         $scope.syntax = function(key, syntax){
           var currentItem = $scope.tabs[key];
@@ -65,6 +82,14 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
             window.aces[$scope.tabs[focus].id].focus()
         }
 
+        $scope.setText = function(index, value){
+          // Timeout to prevent iget errors with ng
+          if ($scope.tabs[index])
+            setTimeout(function(){              
+              window.aces[$scope.tabs[index].id].insert(value)
+            })
+        }        
+
         $scope.close = function($event, tabId){
           $event.stopPropagation();
 
@@ -76,14 +101,37 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
           $scope.tabs.$remove(tabId);
         }
 
-        $scope.add = function(){
+        $scope.add = function(syntax, content){
+          var syntax = syntax || settings.syntaxMode
+          var content = content || ''
+
           $scope.tabStatus.total = ($scope.tabStatus.total) ? $scope.tabStatus.total+1 : 1;
           $scope.tabStatus.$save();
 
-          var x = $scope.tabs.$add({id: $scope.tabStatus.total, title: 'New file'+ $scope.tabStatus.total, syntax: $scope.modes[0] }).then(function(ref){
-            $scope.focus($scope.tabs.length-1)
+          var x = $scope.tabs.$add({id: $scope.tabStatus.total, title: 'New file'+ $scope.tabStatus.total, syntax: syntax, "$priority":9999 }).then(function(ref){
+            
+            var newTabIndex = $scope.tabs.length-1
+
+            if (content != '')
+              $scope.setText(newTabIndex, content )
+
+            $scope.focus(newTabIndex)
+
           });
         }  
+
+
+
+        // Initialize firebase connection
+        var ref = new Firebase($scope.settings.firebase)
+        $scope.tabStatus = $firebase(ref.child('status')).$asObject();
+        $scope.tabs = $firebase(ref.child('tabs')).$asArray();
+        
+        $scope.tabs.$loaded(function(){
+          if ($scope.tabs.length == 0)
+            $scope.add(settings.initialSyntaxMode, settings.initialText);
+        });
+
 
         $scope.sortableOptions = {
           containment: '#sortable-container',
@@ -92,7 +140,6 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
             return sourceItemHandleScope.itemScope.sortableScope.$id === destSortableScope.$id;
           },
           orderChanged: function(diff){
-
             for (var i = 0; i < $scope.tabs.length; i++) {
               var currentItem = $scope.tabs[i];
 
@@ -104,35 +151,39 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
             }
 
             $scope.focus(diff.dest.index)
-
           }
-
         };
-
-
 
       }]
     }
   }])
 
 
-  .directive('hhFirepad', ['Settings', function(Settings) {
+  .directive('hhFirepad', [function() {
 
     return {
       restrict: 'A',
       scope: {
-        tabeditor: '='
+        tabeditor: '=',
+        settings: '='
       },
       link: function($scope, element, attrs) {
+
+        var settings = {
+          theme: $scope.settings.theme || "ace/theme/monokai",
+          syntax: $scope.settings.editorSyntax || "ace/mode/javascript",
+          readOnly: $scope.settings.readOnly || false
+        }
 
         window.aces = window.aces || {}
 
         var firepadDiv = element[0];
-        var firepadRef = new Firebase(Settings.get('FIREBASE_PATH')).child("/session/"+Settings.get('SESSION_TOKEN')+"/editor/ace/"+$scope.tabeditor.id);
+        var firepadRef = new Firebase($scope.settings.firebase).child("firepad/"+$scope.tabeditor.id);
 
         var editor =  window.aces[$scope.tabeditor.id] = ace.edit(element[0]);
-          editor.setTheme("ace/theme/monokai");
-          editor.getSession().setMode("ace/mode/javascript");       
+          editor.setTheme(settings.theme);
+          editor.getSession().setMode(settings.syntax);
+          editor.setReadOnly(settings.readOnly)
 
         $scope.$watch('tabeditor.syntax', function(){
           if ($scope.tabeditor.syntax)
