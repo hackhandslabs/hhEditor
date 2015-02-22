@@ -1,5 +1,6 @@
 @color: #3dbba5;
-
+@borderLight: #4b4b4b;
+@borderDark: #2e2e2e;
 
 .hhEditor_helper_grad1{
   background: #444444; /* Old browsers */
@@ -23,7 +24,6 @@
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#555555', endColorstr='#424242',GradientType=0 ); /* IE6-9 */
 }
 
-
 .hhEditor_helper_grad3{
   background: #2b2b2b; /* Old browsers */
   background: -moz-linear-gradient(top,  #2b2b2b 0%, #353535 100%); /* FF3.6+ */
@@ -38,135 +38,153 @@
 
 
 
-
 .hhEditor{
-
-  height: 600px;
+  .hhEditor_helper_grad3();
+  width: 100%;
   height: 100%;
-  background-color: orange;
+  display: table;
 
   .tabs{
-    height: 30px;
     .hhEditor_helper_grad3();
-    position: absolute;
+    height: 34px;
     width: 100%;
-    b_order-bottom: solid 4px #333333;
-    border-bottom: solid 4px #424242;
+    display: table-row;
 
-    .as-sortable-item, .as-sortable-placeholder {
-      display: inline-block;
-      width: 160px;
-      height: 29px;
-      line-height: 29px;
-      float: left;
-    }
+    .rowTabs{
+      display: flex;
+      display: -webkit-flex;
+      display: -ms-flex;
+      -webkit-flex-direction: row;
+      -ms-flex-direction: row;
+      flex-direction: row;
+      border-bottom: solid 5px #424242;
 
-    /*.sortable-row:after {
-        content: ".";
-        display: block;
-        height: 0;
-        clear: both;
-        visibility: hidden;
-    }*/
+      .as-sortable-item-handle{
+        cursor: default !important;
+      }
 
-    #sortable-container {
-      display: inline-block;
-    }
-
-
-    .tab{
-      width: 160px;
-      background-color: #444444;
-      display: inline-block;
-      overflow: hidden;
-
-      height: 30px;
-      line-height: 30px;
-      margin: 0px;
-    }
-
-    .tab.active{
-      background-color: #4c4c4c;
-    }
-
-
-    .tabButton{
-      padding: 0px 8px;
-      color:#a3a3a3;
-      font-size: 12px;
-      .hhEditor_helper_grad1();
-      cursor: default !important;
-      overflow: hidden;
-
-      border-left: solid 1px #2e2e2e;
-      border-right: solid 1px #4b4b4b;
-      border-bottom: solid 1px #2e2e2e;
-
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-
-      .title{
-        width: 130px;
-        white-space: nowrap;
+      .tab{
+        position: relative;
+        min-width: 10px;
+        max-width: 121px;
+        flex: 1 1 auto;
+        width: 0;
         overflow: hidden;
-        text-overflow: ellipsis;
+
+        height: 30px;
+        line-height: 30px;
+
+        .hhEditor_helper_grad1();
+
+        padding: 0px 8px;
+        color:#a3a3a3;
+        font-size: 12px;
+
+        border-left: solid 1px @borderDark;
+        border-right: solid 1px @borderLight;
+        border-bottom: solid 1px @borderDark;
+
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        .tabTitle{
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          font-size: 12px;
+
+          margin-right: 10px;
+          text-shadow:0 1px rgba(0, 0, 0, 0.4);
+        }
+
+        .tabTitleRename{
+          overflow: hidden;
+          display: inline-block;
+          margin-right: 10px;
+          font-size: 12px;
+          color:white;
+
+
+          text-shadow:0 1px rgba(0, 0, 0, 0.4);
+          outline: none;
+          border:none;
+          background-color: transparent;
+        }
+
+        .tabClose{
+          right: 5px;
+          margin-top: 8px;
+          position: absolute;
+          width: 15px;
+          height: 15px;
+          line-height: 15px;
+          overflow: hidden;
+          top:0px;
+
+          border-radius: 15px;
+          text-align: center;
+          color: #666;
+          font-weight: bold;
+
+          cursor: default !important;
+        }
+
+        .tabClose:hover{
+          background-color: #666;
+          color:white;
+        }
+
       }
 
-      .close{
-        position: absolute;
-        margin-top: 8px;
 
-        margin-left: 130px;
-        width: 15px;
-        height: 15px;
-        line-height: 15px;
-        border-radius: 15px;
-        text-align: center;
+      .tabActive{
+        .hhEditor_helper_grad2() !important;
+        color:white !important;
+        border-bottom: none !important;
+        height: 31px !important;
+        line-height: 30px !important;
+        min-width: 100px !important;
+      /*
+        .tabTitle{
+          padding-top: 2px;
+        }
 
-        color: #666;
-        font-weight: bold;
+        .tabClose{
+          margin-top: 10px;
+        }
+      */
       }
 
-      .close:hover{
-        background-color: #666;
-        color:white;
-      }
     }
-
-    .onetab:first-child .tabButton{
-      border-left:none;
-    }
-
-    .tabButton:hover{
-      color:white;
-    }
-
-    .active{
-      .hhEditor_helper_grad2();
-      color:white;
-      border-bottom: none;
-      height: 30px;
-      line-height: 30px;
-    }
-
 
     .addNew{
-      height: 30px;
-      line-height: 30px;
       color: white;
-      margin: 0px;
-      position: absolute;
-      display: inline-block;
-      padding: 0px 10px;
-      margin-left: 10px;
-      font-size: 22px;
-      padding-top: 2px;
+      margin: 0px !important;
+      padding: 0px !important;
+      padding-right: 2px !important;
+      padding-top: 2px !important;
+
+      height: 28px !important;
+      line-height: 28px !important;
+
       cursor: pointer;
       opacity: 0.4;
+
+      font-size: 18px !important;
+      font-weight: bold !important;
+      text-align: center;
+
+      max-width: 30px !important;
+      min-width: 30px !important;
+      padding: 0px;
+      background: none !important;
+
+      border-right: none !important;
+      text-shadow:0 1px rgba(0, 0, 0, 0.4);
     }
 
     .addNew:hover{
@@ -177,33 +195,24 @@
   }
 
   .tabsContents{
+    width: 100%;
     height: 100%;
-    background-color: blue;
-    padding-top: 34px;
-
-    -webkit-box-sizing: border-box;
-       -moz-box-sizing: border-box;
-            box-sizing: border-box;
+    display: table-row;
   }
 
-  .tabsContents{
-    height: 100%;
-    background-color: black;
-  }
 
   .tabContent{
     height: 100%;
+    width: 100%;
     display: none;
-
+    
     .editor{
-      background-color: olive;
       height: 100%;
-      padding-bottom: 24px;
+      width: 100%;
+      display: table-row;
       -webkit-box-sizing: border-box;
          -moz-box-sizing: border-box;
               box-sizing: border-box;
-
-      overflow: auto;
     }
 
     .aceEditor{
@@ -212,43 +221,60 @@
 
     .editorStatus{
       .hhEditor_helper_grad3();
-      border-top: solid 1px #222222;
-      height: 23px;
-      line-height: 23px;
-      position: absolute;
-      margin-top: -24px;
-      width: 100%;
-      font-size: 11px;
-        color:#7c7c7c;
+      line-height: 25px;
+      height: 25px;
 
-      .cursor{
-        display: inline-block;
-        margin-left: 10px;
-        color:#7c7c7c;
-        
+      width: 100%;
+
+      font-size: 11px;
+      color:#7c7c7c;
+
+      display: table-row;
+      text-shadow:0 1px rgba(0, 0, 0, 0.4);
+
+
+      a{
+        color: #CCC;
       }
 
-      .syntax{
-        display: inline-block;
-        float: right;
+      .editorStatusContent{
 
-        select{
-          text-align: right;
-          -webkit-appearance: none;
-          -moz-appearance: none;
-          appearance: none;
-          padding: 2px 30px 2px 2px;
-          border: none;
-          background: transparent;
-          color:#CCC;
-          outline: 0;
-          option{
-            text-align: right;
+        border-top: solid 1px darken(@borderDark, 4%);
 
-          }
+        .download{
+          margin-left: 10px;
+          text-decoration: none;
         }
 
+        .cursor{
+          display: inline-block;
+          margin-left: 10px;
+          color:#7c7c7c;
+        }
+
+        .syntax{
+          display: inline-block;
+          float: right;
+
+          select{
+            text-align: right;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding: 2px 30px 2px 2px;
+            border: none;
+            background: transparent;
+            color:#CCC;
+            outline: 0;
+            option{
+              text-align: right;
+
+            }
+          }
+        }
       }
+
+
 
 
     }
@@ -256,9 +282,8 @@
   }
   
   .tabContent.active{
-    display: block;
+    display: table;
   }
-
 
   .firepad-container {
     width: 100%;

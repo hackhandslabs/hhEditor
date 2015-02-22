@@ -64,9 +64,44 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
           return result;
         }
 
+        $scope.editing = null;
+
         // Get default mode for new tabs
         settings.syntaxMode = getSyntax(settings.syntax);
         settings.initialSyntaxMode = getSyntax(settings.initialSyntax);
+
+        $scope.hide = function(key){
+          $scope.editing = null;
+          $scope.focus(key)
+        }
+
+        $scope.clicked = function(event, key){
+          if (event.which == 2)
+            return $scope.close(event, key);
+
+          if (key == $scope.tabStatus.focus)
+            $scope.editing = key;
+          else
+            $scope.focus(key)
+        }
+
+        $scope.downloadAll = function () {
+          angular.forEach($scope.tabs, function(value, key) {
+            var title = (value.title || "Untitled")+''+value.syntax.ext
+            var content = window.aces[value.id].getSession().getValue();
+            $scope.download(title, content)
+          });
+        }
+
+
+        $scope.download = function (filename, text) {
+          var pom = document.createElement('a');
+          pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+          pom.setAttribute('download', filename);
+          document.body.appendChild(pom)
+          pom.click();
+          document.body.removeChild(pom)
+        }
 
 
         $scope.syntax = function(key, syntax){
@@ -120,18 +155,18 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
           });
         }  
 
-
-
         // Initialize firebase connection
         var ref = new Firebase($scope.settings.firebase)
         $scope.tabStatus = $firebase(ref.child('status')).$asObject();
         $scope.tabs = $firebase(ref.child('tabs')).$asArray();
         
+        //var xxx = $firebase(ref.child('tabs')).$asObject();
+        $firebase(ref.child('tabs')).$asObject().$bindTo($scope, "tabsData");        
+
         $scope.tabs.$loaded(function(){
           if ($scope.tabs.length == 0)
             $scope.add(settings.initialSyntaxMode, settings.initialText);
         });
-
 
         $scope.sortableOptions = {
           containment: '#sortable-container',
@@ -152,12 +187,11 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
 
             $scope.focus(diff.dest.index)
           }
-        };
+        }
 
       }]
     }
   }])
-
 
   .directive('hhFirepad', [function() {
 
@@ -208,3 +242,34 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
     }
 
   }])
+
+.directive('showFocus', function($timeout) {
+  return function(scope, element, attrs) {
+    scope.$watch(attrs.showFocus, 
+      function (newValue) { 
+        $timeout(function() {
+            newValue && element[0].focus();
+        });
+      },true);
+  };    
+})
+
+.directive('ngEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 13) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngEnter);
+                });
+ 
+                event.preventDefault();
+            }
+        });
+    };
+})
+
+.filter('titleDefault', function() {
+  return function(input) {
+    return input ? input : 'Untitled';
+  };
+})

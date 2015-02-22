@@ -1,10 +1,15 @@
-# HH UI - Editor
-Angular Code Colaboration Editor with tab support.
+# hhEditor - HackHands Code Editor
+Angular directive for Code Colaboration Editor with tab support.
 
 ## Features
-- Tab system support
-- Multiuser (unlimited)
+- Multiple Editors support (using tab layout)
+- Standalone or multi-user Colaboration (using Firebase)
 - Bidirectional syntax change
+- Bidirectional tab create
+- Bidirectional tab close
+- Bidirectional tab reorder
+- Bidirectional tab rename
+- Local files download (for every open tab)
 
 ## Config
 
