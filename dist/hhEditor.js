@@ -103,7 +103,6 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
           document.body.removeChild(pom)
         }
 
-
         $scope.syntax = function(key, syntax){
           var currentItem = $scope.tabs[key];
           $scope.tabs.$save(currentItem);
