@@ -3,12 +3,12 @@ var less = require('gulp-less');
 var directiveReplace = require('gulp-directive-replace');
 var removeCode = require('gulp-remove-code');
 var replace = require('gulp-replace');
-
 var path = require('path');
 
-
-
-
+var git = require('gulp-git')
+var bump = require('gulp-bump')
+var filter = require('gulp-filter')
+var tag_version = require('gulp-tag-version')
 
 
 /**
@@ -34,21 +34,22 @@ function inc(importance) {
         .pipe(gulp.dest('./'))
         // commit the changed version number
         .pipe(git.commit('bumps package version'))
-
         // read only one file to get the version number
         .pipe(filter('package.json'))
         // **tag it in the repository**
         .pipe(tag_version());
 }
 
-gulp.task('patch', ['directives', 'less', 'demo'], function() { return inc('patch'); })
-gulp.task('feature', ['directives', 'less', 'demo'], function() { return inc('minor'); })
-gulp.task('release', ['directives', 'less', 'demo'], function() { return inc('major'); })
+gulp.task('patch', ['directives', 'less', 'demo', 'distribution'], function() { return inc('patch'); })
+gulp.task('feature', ['directives', 'less', 'demo', 'distribution'], function() { return inc('minor'); })
+gulp.task('release', ['directives', 'less', 'demo', 'distribution'], function() { return inc('major'); })
 
 
-
-
-
+gulp.task('distribution', function(){
+	return gulp.src('./dist/*')
+		.pipe(git.add())
+		.pipe(git.commit("New distribution release"));
+});
 
 
 gulp.task('directives', function(){
