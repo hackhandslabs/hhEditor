@@ -21,7 +21,7 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
         }
         settings.initialSyntax = $scope.settings.initialSyntax || settings.syntax
 
-        // Supported syntax mode's
+        // Supported Ace syntax mode's
         $scope.modes = [
           { name: 'JavaScript', mode: 'ace/mode/javascript', ext:'.js'},
           { name: 'HTML', mode:"ace/mode/html", ext:'.html' },
