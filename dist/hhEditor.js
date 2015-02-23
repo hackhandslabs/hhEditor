@@ -9,14 +9,15 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
       scope: {
         settings:'=settings',
       },
-      template: '<div class=hhEditor><div class=tabs><div id=sortable-container><div class=sortable-row as-sortable=sortableOptions ng-model=tabs><div class=onetab ng-repeat="(key, item) in tabs" as-sortable-item=""><div ng-click=focus(key) class=tabButton ng-class="{active: tabStatus.focus == key}" as-sortable-item-handle=""><div class=close ng-click="close($event, key)">x</div><div class=title>{{item.title}}{{item.syntax.ext}}</div></div></div></div></div><div class=addNew ng-click=add()>+</div></div><div class=tabsContents><div ng-repeat="(key, item) in tabs" class=tabContent ng-class="{active: tabStatus.focus == key}"><div class=editor><div hh-firepad="" tabeditor=item settings=settings class=aceEditor></div></div><div class=editorStatus><div class=cursor>Line {{item.row || "1"}}, Column {{item.column || "1"}}</div><div class=syntax>Syntax:<select ng-model=item.syntax ng-change=syntax(key) ng-options="mode.name for mode in modes track by mode.name"></select></div></div></div></div></div>',
+      template: '<div class=hhEditor><div class=tabs><div id=sortable-container class=rowTabs as-sortable=sortableOptions ng-model=tabs><div ng-repeat="(key, item) in tabs" ng-click="clicked($event, key)" ng-class="{tabActive: tabStatus.focus == key}" as-sortable-item="" class=tab><div ng-show="editing != key" as-sortable-item-handle="" class=tabTitle>{{item.title | titleDefault}}{{item.syntax.ext}}</div><input show-focus="editing == key" ng-show="editing == key" ng-blur=hide(key) ng-enter=hide(key) ng-model="tabsData[item[\'$id\']].title" class=tabTitleRename> <strong ng-click="close($event, key)" class=tabClose>x</strong></div><div class="tab addNew" ng-click=add()>+</div></div></div><div class=tabsContents><div ng-repeat="(key, item) in tabs" class=tabContent ng-class="{active: tabStatus.focus == key}"><div class=editor><div hh-firepad="" tabeditor=item settings=settings class=aceEditor></div></div><div class=editorStatus><div class=editorStatusContent><a class=download ng-click=downloadAll()>&#8582;</a><div class=cursor>Line {{item.row || "1"}}, Column {{item.column || "1"}}</div><div class=syntax>Syntax:<select ng-model=item.syntax ng-change=syntax(key) ng-options="mode.name for mode in modes track by mode.name"></select></div></div></div></div></div></div>',
       controller: ['$scope', function($scope){
 
         // Base settings
         var settings = {
           firebase: false,
           syntax: $scope.settings.syntax || 'JavaScript',
-          initialText: $scope.settings.initialText || '',          
+          initialName: $scope.settings.initialName,
+          initialText: $scope.settings.initialText || '',
         }
         settings.initialSyntax = $scope.settings.initialSyntax || settings.syntax
 
@@ -64,9 +65,44 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
           return result;
         }
 
+        $scope.editing = null;
+
         // Get default mode for new tabs
         settings.syntaxMode = getSyntax(settings.syntax);
         settings.initialSyntaxMode = getSyntax(settings.initialSyntax);
+
+        $scope.hide = function(key){
+          $scope.editing = null;
+          $scope.focus(key)
+        }
+
+        $scope.clicked = function(event, key){
+          if (event.which == 2)
+            return $scope.close(event, key);
+
+          if (key == $scope.tabStatus.focus)
+            $scope.editing = key;
+          else
+            $scope.focus(key)
+        }
+
+        $scope.downloadAll = function () {
+          angular.forEach($scope.tabs, function(value, key) {
+            var title = (value.title || "Untitled")+''+value.syntax.ext
+            var content = window.aces[value.id].getSession().getValue();
+            $scope.download(title, content)
+          });
+        }
+
+
+        $scope.download = function (filename, text) {
+          var pom = document.createElement('a');
+          pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+          pom.setAttribute('download', filename);
+          document.body.appendChild(pom)
+          pom.click();
+          document.body.removeChild(pom)
+        }
 
 
         $scope.syntax = function(key, syntax){
@@ -101,14 +137,15 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
           $scope.tabs.$remove(tabId);
         }
 
-        $scope.add = function(syntax, content){
+        $scope.add = function(syntax, content, title){
           var syntax = syntax || settings.syntaxMode
           var content = content || ''
 
           $scope.tabStatus.total = ($scope.tabStatus.total) ? $scope.tabStatus.total+1 : 1;
           $scope.tabStatus.$save();
+          var newTitle = title || 'New file'+ $scope.tabStatus.total
 
-          var x = $scope.tabs.$add({id: $scope.tabStatus.total, title: 'New file'+ $scope.tabStatus.total, syntax: syntax, "$priority":9999 }).then(function(ref){
+          var x = $scope.tabs.$add({id: $scope.tabStatus.total, title: newTitle, syntax: syntax, "$priority":9999 }).then(function(ref){
             
             var newTabIndex = $scope.tabs.length-1
 
@@ -120,18 +157,18 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
           });
         }  
 
-
-
         // Initialize firebase connection
         var ref = new Firebase($scope.settings.firebase)
         $scope.tabStatus = $firebase(ref.child('status')).$asObject();
         $scope.tabs = $firebase(ref.child('tabs')).$asArray();
         
+        //var xxx = $firebase(ref.child('tabs')).$asObject();
+        $firebase(ref.child('tabs')).$asObject().$bindTo($scope, "tabsData");        
+
         $scope.tabs.$loaded(function(){
           if ($scope.tabs.length == 0)
-            $scope.add(settings.initialSyntaxMode, settings.initialText);
+            $scope.add(settings.initialSyntaxMode, settings.initialText, settings.initialName);
         });
-
 
         $scope.sortableOptions = {
           containment: '#sortable-container',
@@ -152,12 +189,11 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
 
             $scope.focus(diff.dest.index)
           }
-        };
+        }
 
       }]
     }
   }])
-
 
   .directive('hhFirepad', [function() {
 
@@ -208,3 +244,34 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
     }
 
   }])
+
+.directive('showFocus', function($timeout) {
+  return function(scope, element, attrs) {
+    scope.$watch(attrs.showFocus, 
+      function (newValue) { 
+        $timeout(function() {
+            newValue && element[0].focus();
+        });
+      },true);
+  };    
+})
+
+.directive('ngEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 13) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngEnter);
+                });
+ 
+                event.preventDefault();
+            }
+        });
+    };
+})
+
+.filter('titleDefault', function() {
+  return function(input) {
+    return input ? input : 'Untitled';
+  };
+})
