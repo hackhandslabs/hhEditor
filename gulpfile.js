@@ -10,6 +10,8 @@ var bump = require('gulp-bump')
 var filter = require('gulp-filter')
 var tag_version = require('gulp-tag-version')
 
+var spawn = require('child_process').spawn;
+ 
 
 /**
  * Bumping version number and tagging the repository with it.
@@ -40,15 +42,20 @@ function inc(importance) {
         .pipe(tag_version());
 }
 
-gulp.task('patch', ['directives', 'less', 'demo', 'distribution'], function() { return inc('patch'); })
-gulp.task('feature', ['directives', 'less', 'demo', 'distribution'], function() { return inc('minor'); })
-gulp.task('release', ['directives', 'less', 'demo', 'distribution'], function() { return inc('major'); })
+gulp.task('patch', ['directives', 'less', 'demo', 'dist'], function() { return inc('patch'); })
+gulp.task('feature', ['directives', 'less', 'demo', 'dist'], function() { return inc('minor'); })
+gulp.task('release', ['directives', 'less', 'demo', 'dist'], function() { return inc('major'); })
 
 
-gulp.task('distribution', function(){
+gulp.task('dist', function(){
 	return gulp.src('./dist/*')
 		.pipe(git.add())
 		.pipe(git.commit("[BOT] New distribution release"));
+});
+
+
+gulp.task('npm', function (done) {
+  spawn('npm', ['publish'], { stdio: 'inherit' }).on('close', done);
 });
 
 
