@@ -16,7 +16,8 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
         var settings = {
           firebase: false,
           syntax: $scope.settings.syntax || 'JavaScript',
-          initialText: $scope.settings.initialText || '',          
+          initialName: $scope.settings.initialName,
+          initialText: $scope.settings.initialText || '',
         }
         settings.initialSyntax = $scope.settings.initialSyntax || settings.syntax
 
@@ -136,14 +137,15 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
           $scope.tabs.$remove(tabId);
         }
 
-        $scope.add = function(syntax, content){
+        $scope.add = function(syntax, content, title){
           var syntax = syntax || settings.syntaxMode
           var content = content || ''
 
           $scope.tabStatus.total = ($scope.tabStatus.total) ? $scope.tabStatus.total+1 : 1;
           $scope.tabStatus.$save();
+          var newTitle = title || 'New file'+ $scope.tabStatus.total
 
-          var x = $scope.tabs.$add({id: $scope.tabStatus.total, title: 'New file'+ $scope.tabStatus.total, syntax: syntax, "$priority":9999 }).then(function(ref){
+          var x = $scope.tabs.$add({id: $scope.tabStatus.total, title: newTitle, syntax: syntax, "$priority":9999 }).then(function(ref){
             
             var newTabIndex = $scope.tabs.length-1
 
@@ -165,7 +167,7 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
 
         $scope.tabs.$loaded(function(){
           if ($scope.tabs.length == 0)
-            $scope.add(settings.initialSyntaxMode, settings.initialText);
+            $scope.add(settings.initialSyntaxMode, settings.initialText, settings.initialName);
         });
 
         $scope.sortableOptions = {
