@@ -5,6 +5,12 @@
     "HackHands Dev Team"
   ],
   "description": "Angular directive for Code Colaboration Editor with tab support",
+  "keywords": ["hackhands", "ace", "editor", "developers", "tabs", "colaboration"],
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/hackhandslabs/hhEditor.git"
+  },
+  "readme": "Readme.md",
   "main": "dist/hhEditor.js",
   "moduleType": [
     "globals"
@@ -20,6 +26,7 @@
     "ace-builds": "ajaxorg/ace-builds#~1.1.8",
     "ng-sortable": "~1.1.9",
     "firepad": "~1.1.0",
+    "firebase": "~2.1.2",
     "angularfire": "~0.9.2"
   },
   "resolutions": {
