@@ -33,7 +33,7 @@ function inc(importance) {
         // save it back to filesystem
         .pipe(gulp.dest('./'))
         // commit the changed version number
-        .pipe(git.commit('bumps package version'))
+        .pipe(git.commit('[BOT] Bump package version'))
         // read only one file to get the version number
         .pipe(filter('package.json'))
         // **tag it in the repository**
@@ -48,7 +48,7 @@ gulp.task('release', ['directives', 'less', 'demo', 'distribution'], function() 
 gulp.task('distribution', function(){
 	return gulp.src('./dist/*')
 		.pipe(git.add())
-		.pipe(git.commit("New distribution release"));
+		.pipe(git.commit("[BOT] New distribution release"));
 });
 
 
