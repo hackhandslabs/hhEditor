@@ -185,7 +185,7 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
           accept: function (sourceItemHandleScope, destSortableScope) {
             if (settings.readOnly == true)
               return false
-            
+
             return sourceItemHandleScope.itemScope.sortableScope.$id === destSortableScope.$id;
           },
           orderChanged: function(diff){
@@ -249,7 +249,7 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
         var firepad = Firepad.fromACE(firepadRef, editor);
 
         firepad.on('ready', function() { 
-          //firepad.setText('xxxxx'+$scope.tab.id); 
+          //firepad.setText('hello world'); 
         });
 
       }
@@ -257,7 +257,7 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
 
   }])
 
-.directive('showFocus', function($timeout) {
+.directive('showFocus', ['$timeout', function($timeout) {
   return function(scope, element, attrs) {
     scope.$watch(attrs.showFocus, 
       function (newValue) { 
@@ -266,7 +266,7 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
         });
       },true);
   };    
-})
+}])
 
 .directive('ngEnter', function () {
     return function (scope, element, attrs) {
