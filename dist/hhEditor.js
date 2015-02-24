@@ -9,13 +9,14 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
       scope: {
         settings:'=settings',
       },
-      template: '<div class=hhEditor><div class=tabs><div id=sortable-container class=rowTabs as-sortable=sortableOptions ng-model=tabs><div ng-repeat="(key, item) in tabs" ng-click="clicked($event, key)" ng-class="{tabActive: tabStatus.focus == key}" as-sortable-item="" class=tab><div ng-show="editing != key" as-sortable-item-handle="" class=tabTitle>{{item.title | titleDefault}}{{item.syntax.ext}}</div><input show-focus="editing == key" ng-show="editing == key" ng-blur=hide(key) ng-enter=hide(key) ng-model="tabsData[item[\'$id\']].title" class=tabTitleRename> <strong ng-click="close($event, key)" class=tabClose>x</strong></div><div class="tab addNew" ng-click=add()>+</div></div></div><div class=tabsContents><div ng-repeat="(key, item) in tabs" class=tabContent ng-class="{active: tabStatus.focus == key}"><div class=editor><div hh-firepad="" tabeditor=item settings=settings class=aceEditor></div></div><div class=editorStatus><div class=editorStatusContent><a class=download ng-click=downloadAll()>&#8582;</a><div class=cursor>Line {{item.row || "1"}}, Column {{item.column || "1"}}</div><div class=syntax>Syntax:<select ng-model=item.syntax ng-change=syntax(key) ng-options="mode.name for mode in modes track by mode.name"></select></div></div></div></div></div></div>',
+      template: '<div class=hhEditor><div class=tabs><div id=sortable-container class=rowTabs as-sortable=sortableOptions ng-model=tabs><div ng-repeat="(key, item) in tabs" ng-click="clicked($event, key)" ng-class="{tabActive: tabStatus.focus == key}" as-sortable-item="" class=tab><div ng-show="editing != key" as-sortable-item-handle="" class=tabTitle>{{item.title | titleDefault}}{{item.syntax.ext}}</div><input show-focus="editing == key" ng-show="editing == key" ng-blur=hide(key) ng-enter=hide(key) ng-model="tabsData[item[\'$id\']].title" class=tabTitleRename> <strong ng-hide=settings.readOnly ng-click="close($event, key)" class=tabClose>x</strong></div><div ng-hide=settings.readOnly class="tab addNew" ng-click=add()>+</div></div></div><div class=tabsContents><div ng-repeat="(key, item) in tabs" class=tabContent ng-class="{active: tabStatus.focus == key}"><div class=editor><div hh-firepad="" tabeditor=item settings=settings class=aceEditor></div></div><div class=editorStatus><div class=editorStatusContent><a class=download ng-click=downloadAll()>&#8582;</a><div class=cursor>Line {{item.row || "1"}}, Column {{item.column || "1"}}</div><div class=syntax>Syntax:<select ng-model=item.syntax ng-change=syntax(key) ng-options="mode.name for mode in modes track by mode.name"></select></div></div></div></div></div></div>',
       controller: ['$scope', function($scope){
 
         // Base settings
         var settings = {
           firebase: false,
           syntax: $scope.settings.syntax || 'JavaScript',
+          readOnly: $scope.settings.readOnly || false,
           initialName: $scope.settings.initialName,
           initialText: $scope.settings.initialText || '',
         }
@@ -81,7 +82,11 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
             return $scope.close(event, key);
 
           if (key == $scope.tabStatus.focus)
+          {
+            if (settings.readOnly)
+              return
             $scope.editing = key;
+          }
           else
             $scope.focus(key)
         }
@@ -104,6 +109,9 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
         }
 
         $scope.syntax = function(key, syntax){
+          if (settings.readOnly)
+            return
+
           var currentItem = $scope.tabs[key];
           $scope.tabs.$save(currentItem);
         }
@@ -126,6 +134,9 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
 
         $scope.close = function($event, tabId){
           $event.stopPropagation();
+
+          if (settings.readOnly)
+            return
 
           if (tabId <= $scope.tabs.length-2)
             $scope.focus(tabId)
@@ -172,6 +183,9 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
           containment: '#sortable-container',
           //restrict move across columns. move only within column.
           accept: function (sourceItemHandleScope, destSortableScope) {
+            if (settings.readOnly == true)
+              return false
+            
             return sourceItemHandleScope.itemScope.sortableScope.$id === destSortableScope.$id;
           },
           orderChanged: function(diff){
