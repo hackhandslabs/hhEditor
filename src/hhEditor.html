@@ -4,9 +4,9 @@
 			<div ng-repeat="(key, item) in tabs" ng-click="clicked($event, key)" ng-class="{tabActive: tabStatus.focus == key}" as-sortable-item class="tab">
 				<div ng-show="editing != key" as-sortable-item-handle class="tabTitle">{{item.title | titleDefault}}{{item.syntax.ext}}</div>
 				<input show-focus="editing == key" ng-show="editing == key" ng-blur="hide(key)" ng-enter="hide(key)" ng-model="tabsData[item['$id']].title" class="tabTitleRename" />
-				<strong ng-click="close($event, key)" class="tabClose">x</strong>
+				<strong ng-hide="settings.readOnly" ng-click="close($event, key)" class="tabClose">x</strong>
 			</div>
-			<div class="tab addNew" ng-click="add()">+</div>
+			<div ng-hide="settings.readOnly" class="tab addNew" ng-click="add()">+</div>
 		</div>
 	</div>
 	<div class="tabsContents">

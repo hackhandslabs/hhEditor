@@ -16,6 +16,7 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
         var settings = {
           firebase: false,
           syntax: $scope.settings.syntax || 'JavaScript',
+          readOnly: $scope.settings.readOnly || false,
           initialName: $scope.settings.initialName,
           initialText: $scope.settings.initialText || '',
         }
@@ -81,7 +82,11 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
             return $scope.close(event, key);
 
           if (key == $scope.tabStatus.focus)
+          {
+            if (settings.readOnly)
+              return
             $scope.editing = key;
+          }
           else
             $scope.focus(key)
         }
@@ -104,6 +109,9 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
         }
 
         $scope.syntax = function(key, syntax){
+          if (settings.readOnly)
+            return
+
           var currentItem = $scope.tabs[key];
           $scope.tabs.$save(currentItem);
         }
@@ -126,6 +134,9 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
 
         $scope.close = function($event, tabId){
           $event.stopPropagation();
+
+          if (settings.readOnly)
+            return
 
           if (tabId <= $scope.tabs.length-2)
             $scope.focus(tabId)
@@ -172,6 +183,9 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
           containment: '#sortable-container',
           //restrict move across columns. move only within column.
           accept: function (sourceItemHandleScope, destSortableScope) {
+            if (settings.readOnly == true)
+              return false
+            
             return sourceItemHandleScope.itemScope.sortableScope.$id === destSortableScope.$id;
           },
           orderChanged: function(diff){
