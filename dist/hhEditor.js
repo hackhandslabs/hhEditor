@@ -231,7 +231,8 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
         var editor =  window.aces[$scope.tabeditor.id] = ace.edit(element[0]);
           editor.setTheme(settings.theme);
           editor.getSession().setMode(settings.syntax);
-          editor.setReadOnly(settings.readOnly)
+          editor.setReadOnly(settings.readOnly);
+          editor.setShowPrintMargin(false);
 
         $scope.$watch('tabeditor.syntax', function(){
           if ($scope.tabeditor.syntax)
