@@ -247,7 +247,10 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
           });
         });
 
-        var firepad = Firepad.fromACE(firepadRef, editor);
+        var monokaiSelectColors = ['#421F28', '#4D3C0C', '#3D344F', '#453223'];
+        var userColor = monokaiSelectColors[Math.floor(Math.random() * monokaiSelectColors.length)];
+
+        var firepad = Firepad.fromACE(firepadRef, editor, { userColor: userColor });
 
         firepad.on('ready', function() { 
           //firepad.setText('hello world'); 
