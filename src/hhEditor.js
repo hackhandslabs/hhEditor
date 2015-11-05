@@ -48,7 +48,7 @@ angular.module('hhUI', ['ui.sortable', 'firebase'])
           { name: 'XML', mode:"ace/mode/xml", ext:'.xml' },
           { name: 'YAML', mode:"ace/mode/yaml", ext:'.yaml' },
           { name: 'LUA', mode:"ace/mode/lua", ext:'.lua' },
-          { name: 'Markdown', mode:"ace/mode/ruby", ext:'.md' },
+          { name: 'Markdown', mode:"ace/mode/markdown", ext:'.md' },
           { name: 'Matlab', mode:"ace/mode/matlab", ext:'.m' },
           { name: 'Objective-C', mode:"ace/mode/objectivec", ext:'.m' },
           { name: 'PERL', mode:"ace/mode/perl", ext:'.pl' },
